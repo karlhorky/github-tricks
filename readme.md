@@ -8,7 +8,7 @@ When in a particular folder (such as the root directory), GitHub displays conten
 
 However, these README files need to be named `README.md`, `readme.md`, `README.mdx` or `readme.mdx` in order to be recognized. GitHub doesn't display the content of certain common Markdown index filenames such as `index.md` or `index.mdx` ([❓MDX file extension](https://github.com/mdx-js/mdx)) ([as of 18 June 2019](https://twitter.com/karlhorky/status/1140962752858677249)).
 
-GitHub does however follow symlinks named `README.md`, `readme.md`, `README.mdx` and `readme.mdx`.
+GitHub does however follow symlinks named `README.md`, `readme.md`, `README.mdx` and `readme.mdx`. See example here: [mdx-deck root folder](https://github.com/jxnblk/mdx-deck), [mdx-deck symlink README.md](https://github.com/jxnblk/mdx-deck/blob/master/README.md)
 
 So if you want to use another file (also in a subdirectory) as the contents displayed within a directory, create a symlink pointing at it:
 
