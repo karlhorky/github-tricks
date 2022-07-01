@@ -1,5 +1,51 @@
 # GitHub Tricks
 
+## GitHub Actions: Edit `.json`, `.yml` and `.csv` Files Without Installing Anything
+
+`yq` (similar to `jq`) is preinstalled on GitHub Actions runners, which means you can edit a `.json`, `.yml` or `.csv` file very easily without installing any software.
+
+For example, the following workflow file would use `yq` to copy all `"resolutions"` to `"overrides"` in a `package.json` file (and then commit the result using `stefanzweifel/git-auto-commit-action`.
+
+**`.github/workflows/copy-resolutions-to-overrides.yml`**
+
+```yml
+name: Copy Yarn Resolutions to npm Overrides
+
+on:
+  push:
+    branches:
+      # Match every branch except for main
+      - '**'
+      - '!main'
+
+jobs:
+  build:
+    name: Copy Yarn Resolutions to npm Overrides
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+        # To trigger further `on: [push]` workflow runs
+        # Ref: https://github.com/peter-evans/create-pull-request/blob/main/docs/concepts-guidelines.md#triggering-further-workflow-runs
+        # Ref: https://github.com/peter-evans/create-pull-request/blob/main/docs/concepts-guidelines.md#push-using-ssh-deploy-keys
+        with:
+          ssh-key: ${{ secrets.SSH_PRIVATE_KEY }}
+
+      - name: Use Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '16'
+
+      - name: Copy "resolutions" object to "overrides" in package.json
+        run: yq --inplace --output-format=json '.overrides = .resolutions' package.json
+
+      - name: Install any updated dependencies
+        run: npm install
+
+      - uses: stefanzweifel/git-auto-commit-action@v4
+        with:
+          commit_message: Update Overrides from Resolutions
+```
+
 ## README Symlinks
 
 When in a particular folder (such as the root directory), GitHub displays content from README files underneath the files in that folder:
