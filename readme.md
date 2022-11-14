@@ -46,6 +46,12 @@ jobs:
           commit_message: Update Overrides from Resolutions
 ```
 
+Or, to copy all `@types/*` and `typescript` packages from `devDependencies` to `dependencies` (eg. for a production build):
+
+```bash
+yq --in-place --output-format=json '.dependencies = .dependencies * (.devDependencies | to_entries | map(select(.key | test("^(typescript|@types/*)"))) | from_entries)' package.json
+```
+
 ## README Symlinks
 
 When in a particular folder (such as the root directory), GitHub displays content from README files underneath the files in that folder:
