@@ -68,6 +68,17 @@ Demo:
 | --------------------------------------- | ------------------------------------- |
 | `border-bottom-right-radius`            | Defines the shape of the bottom-right |
 
+## GitHub Flavored Markdown Linking to Anchors in Other Markdown Files
+
+Linking to an anchor in a relative Markdown file path (eg. `./windows.md#user-content-xxx`) doesn't currently work on GitHub (Mar 2023). Probably another bug in GitHub's client-side router, maybe fixed sometime.
+
+A workaround is to link to the full GitHub URL with a `www.` subdomain - this will cause a redirect to the non-`www.` version, and scroll to the anchor:
+
+```diff
+-[Expo + React Native](./windows.md#user-content-expo-react-native)
++[Expo + React Native](https://www.github.com/upleveled/system-setup/blob/main/windows.md#user-content-expo-react-native)
+```
+
 ## README Symlinks
 
 When in a particular folder (such as the root directory), GitHub displays content from README files underneath the files in that folder:
