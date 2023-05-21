@@ -1,5 +1,7 @@
 # GitHub Tricks
 
+A collection of useful GitHub tricks
+
 ## GitHub Actions: Edit `.json`, `.yml` and `.csv` Files Without Installing Anything
 
 `yq` (similar to `jq`) is preinstalled on GitHub Actions runners, which means you can edit a `.json`, `.yml` or `.csv` file very easily without installing any software.
