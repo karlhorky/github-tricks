@@ -60,7 +60,7 @@ It can be useful to commit and push to a pull request in a GitHub Actions workfl
 
 Once your script makes the commit and pushes to the PR, it can also be useful to re-run the workflows on that commit, eg. linting the new commit, so that [GitHub auto-merge](https://docs.github.com/en/pull-requests/collaborating-with-pull-requests/incorporating-changes-from-a-pull-request/automatically-merging-a-pull-request) can run also on [protected branches with required status checks](https://docs.github.com/en/repositories/configuring-branches-and-merges-in-your-repository/managing-protected-branches/about-protected-branches#require-status-checks-before-merging).
 
-`‼️ WARNING` Make sure that you do not create a loop! Once your script creates a commit, the workflow will run your script again on the new commit. On the 2nd run, it **should not** create a new commit, or you will have an endless loop of GitHub Actions workflow runs. 😬 We will revisit this in the script below.
+‼️ WARNING: Make sure that you do not create a loop! Once your script creates a commit, the workflow will run your script again on the new commit. On the 2nd run, it **should not** create a new commit, or you will have an endless loop of GitHub Actions workflow runs. 😬 We will revisit this in the script below.
 
 1. First, create a GitHub fine-grained personal access token:
    1. Visit https://github.com/settings/personal-access-tokens/new
@@ -90,7 +90,7 @@ Once your script makes the commit and pushes to the PR, it can also be useful to
           # Disable configuring $GITHUB_TOKEN in local git config
           persist-credentials: false
       ```
-   2. ‼️ IMPORTANT: As mentioned above at `‼️ WARNING`, make sure that you don't create a loop! Make sure that your script which alters files includes some kind of way to exit early, for example checking `git status --porcelain` and running `exit 0` to exit the script early without errors or [by skipping steps based on the last commits](https://joht.github.io/johtizen/build/2022/01/20/github-actions-push-into-repository.html#skip-push-on-auto-commit)
+   2. ‼️ IMPORTANT: As mentioned above, make sure that you don't create a loop! Make sure that your script which alters files includes some kind of way to exit early, for example checking `git status --porcelain` and running `exit 0` to exit the script early without errors or [by skipping steps based on the last commits](https://joht.github.io/johtizen/build/2022/01/20/github-actions-push-into-repository.html#skip-push-on-auto-commit)
 
       ```yaml
       - name: Fix `pnpm patch` not upgrading patch versions automatically
