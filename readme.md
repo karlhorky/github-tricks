@@ -73,7 +73,7 @@ Once your script makes the commit, it can also be useful to re-run the workflows
       This will also by default set **Metadata** to **Access: Read-only**
       <img src="github-fine-grained-personal-access-token-metadata.webp" alt="Screenshot of GitHub fine-grained personal access token form, showing the Metadata setting" /><br /><br />
    5. Review your settings under **Overview** - it should be set to "2 permissions for 1 of your repositories" and "0 Account permissions"
-      <img src="github-fine-grained-personal-access-token-metadata.webp" alt="Screenshot of GitHub fine-grained personal access token form, showing the Overview details" /><br /><br />
+      <img src="github-fine-grained-personal-access-token-overview.webp" alt="Screenshot of GitHub fine-grained personal access token form, showing the Overview details" /><br /><br />
    6. If you are satisfied with this, click on **Generate token**.
    7. This will show you the token on your screen only once, so be careful to copy the token.
 2. Add a repository secret
