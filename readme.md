@@ -79,7 +79,7 @@ Once your script makes the commit and pushes to the PR, it can also be useful to
 2. Add a repository secret
    1. In the repository where the workflow will run, visit **Settings** -> **Secrets and variables** -> **Actions** and click on **New repository secret**<br /><br />
       <img src="github-settings-new-repo-secret.webp" alt="Screenshot of GitHub repository settings page for Actions secrets and variables" /><br /><br />
-   2. For **Name**, enter a `SCREAMING_SNAKE_CASE` name that makes it clear that it's a GitHub token (eg. `PNPM_PATCH_UPDATE_GITHUB_TOKEN`) and for **Secret** paste in the token that you copied at the end of step 1 above<br /><br />
+   2. For **Name**, enter a `SCREAMING_SNAKE_CASE` name that makes it clear that it's a GitHub token (eg. `PNPM_PATCH_UPDATE_GITHUB_TOKEN`) and for **Secret** paste in the token that you copied at the end of step 1 above. Click **Add secret**.<br /><br />
       <img src="github-settings-new-repo-secret-form.webp" alt="Screenshot of GitHub repository settings page for Actions secrets and variables" /><br /><br />
 3. Adjust your workflow for the token
 
