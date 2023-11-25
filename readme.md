@@ -64,22 +64,22 @@ Once your script makes the commit and pushes to the PR, it can also be useful to
 
 1. First, create a GitHub fine-grained personal access token:
    1. Visit https://github.com/settings/personal-access-tokens/new
-   2. Fill out **Token name** (repository name + a short reminder), **Expiration** (longest available, 1 year), **Description** (a reminder of the purpose)
+   2. Fill out **Token name** (repository name + a short reminder), **Expiration** (longest available, 1 year), **Description** (a reminder of the purpose)<br /><br />
       <img src="github-fine-grained-personal-access-token-name-expiration-description.webp" alt="Screenshot of GitHub fine-grained personal access token form, with the values Token name: 'archive-webpage-browser-extension push', Expiration: 'Custom - 1 year', Description: 'archive-webpage-browser-extension: Fix `pnpm patch` not upgrading patch versions automatically'" /><br /><br />
-   3. Under **Repository access**, choose **Only select repositories** and then choose the repository where the workflow will run
+   3. Under **Repository access**, choose **Only select repositories** and then choose the repository where the workflow will run<br /><br />
       <img src="github-fine-grained-personal-access-token-repo-access.webp" alt="Screenshot of GitHub fine-grained personal access token Repository Access form, showing the `karlhorky/archive-webpage-browser-extension` selected as the single repository with access" /><br /><br />
-   4. Under **Permissions**, expand **Repository permissions**, locate **Contents** and choose **Access: Read and write**
+   4. Under **Permissions**, expand **Repository permissions**, locate **Contents** and choose **Access: Read and write**<br /><br />
       <img src="github-fine-grained-personal-access-token-contents-read-write.webp" alt="Screenshot of GitHub fine-grained personal access token form, showing the Contents setting" /><br /><br />
-      This will also by default set **Metadata** to **Access: Read-only**
+      This will also by default set **Metadata** to **Access: Read-only**<br /><br />
       <img src="github-fine-grained-personal-access-token-metadata.webp" alt="Screenshot of GitHub fine-grained personal access token form, showing the Metadata setting" /><br /><br />
-   5. Review your settings under **Overview** - it should be set to "2 permissions for 1 of your repositories" and "0 Account permissions"
+   5. Review your settings under **Overview** - it should be set to "2 permissions for 1 of your repositories" and "0 Account permissions"<br /><br />
       <img src="github-fine-grained-personal-access-token-overview.webp" alt="Screenshot of GitHub fine-grained personal access token form, showing the Overview details" /><br /><br />
    6. If you are satisfied with this, click on **Generate token**.
    7. This will show you the token on your screen only once, so be careful to copy the token.
 2. Add a repository secret
-   1. In the repository where the workflow will run, visit **Settings** -> **Secrets and variables** -> **Actions** and click on **New repository secret**
+   1. In the repository where the workflow will run, visit **Settings** -> **Secrets and variables** -> **Actions** and click on **New repository secret**<br /><br />
       <img src="github-settings-new-repo-secret.webp" alt="Screenshot of GitHub repository settings page for Actions secrets and variables" /><br /><br />
-   2. For **Name**, enter a `SCREAMING_SNAKE_CASE` name that makes it clear that it's a GitHub token (eg. `PNPM_PATCH_UPDATE_GITHUB_TOKEN`) and for **Secret** paste in the token that you copied at the end of step 1 above
+   2. For **Name**, enter a `SCREAMING_SNAKE_CASE` name that makes it clear that it's a GitHub token (eg. `PNPM_PATCH_UPDATE_GITHUB_TOKEN`) and for **Secret** paste in the token that you copied at the end of step 1 above<br /><br />
       <img src="github-settings-new-repo-secret-form.webp" alt="Screenshot of GitHub repository settings page for Actions secrets and variables" /><br /><br />
 3. Adjust your workflow for the token
 
