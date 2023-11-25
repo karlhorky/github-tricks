@@ -197,7 +197,7 @@ Pull request with automatic PR commit including workflow checks: https://github.
   <img src="github-actions-pr-commit.webp" alt="" />
   <figcaption>
     <em>
-      Screenshot of a GitHub PR showing two commits, the first by Renovate bot upgrading dependencies and the second by the automated script shown above. Both commits have green checkmarks next to them, indicating that the workflows have run on them, making the PR auto-merge succeed at the very bottom.
+      Screenshot of a GitHub PR showing two commits, the first by Renovate bot upgrading dependencies and the second by the automated script shown above. Both commits have status icons to the right of them (one red X and one green checkmark), indicating that the workflows have run on both of them. At the bottom, the PR auto-merge added by the Renovate bot is carried out because the last commit has a green checkmark.
     </em>
   </figcaption>
   <br />
