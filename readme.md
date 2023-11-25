@@ -63,7 +63,7 @@ Once your script makes the commit and pushes to the PR, it can also be useful to
 ‼️ WARNING: Make sure that you do not create a loop! Once your script creates a commit, the workflow will run your script again on the new commit. On the 2nd run, it **should not** create a new commit, or you will have an endless loop of GitHub Actions workflow runs. 😬 We will revisit this in the script below.
 
 1. First, create a GitHub fine-grained personal access token:
-   1. Visit https://github.com/settings/tokens?type=beta
+   1. Visit https://github.com/settings/personal-access-tokens/new
    2. Fill out **Token name** (repository name + a short reminder), **Expiration** (longest available, 1 year), **Description** (a reminder of the purpose)
       <img src="github-fine-grained-personal-access-token-name-expiration-description.webp" alt="Screenshot of GitHub fine-grained personal access token form, with the values Token name: 'archive-webpage-browser-extension push', Expiration: 'Custom - 1 year', Description: 'archive-webpage-browser-extension: Fix `pnpm patch` not upgrading patch versions automatically'" /><br /><br />
    3. Under **Repository access**, choose **Only select repositories** and then choose the repository where the workflow will run
