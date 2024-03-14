@@ -194,22 +194,20 @@ Once your script makes the commit and pushes to the PR, it can also be useful to
 
 ### Example
 
-[`.github/workflows/lint-check-types-and-build.yml`](https://github.com/karlhorky/archive-webpage-browser-extension/blob/main/.github/workflows/lint-check-types-and-build.yml)
-
 ```yaml
-name: Lint, Check Types, Build
+name: Fix pnpm patches
 on: push
 
 jobs:
-  lint-check-types-and-build:
-    name: Lint, Check Types, Build
+  fix-pnpm-patches:
+    name: Fix pnpm patches
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
         with:
           # Disable configuring $GITHUB_TOKEN in local git config
           persist-credentials: false
-      - uses: pnpm/action-setup@v2
+      - uses: pnpm/action-setup@v3
         with:
           version: 'latest'
       - uses: actions/setup-node@v4
@@ -218,7 +216,7 @@ jobs:
           cache: 'pnpm'
 
       # Fix `pnpm patch` not upgrading patch versions automatically
-      # https://github.com/pnpm/pnpm/issues/5686#issuecomment-1527221879
+      # https://github.com/pnpm/pnpm/issues/5686#issuecomment-1669538653
       - name: Fix `pnpm patch` not upgrading patch versions automatically
         run: |
           ./scripts/fix-pnpm-patches.sh
@@ -237,13 +235,6 @@ jobs:
           # Credit for oauth2 syntax is the ad-m/github-push-action GitHub Action:
           # https://github.com/ad-m/github-push-action/blob/d91a481090679876dfc4178fef17f286781251df/start.sh#L43-L55
           git push https://oauth2:${{ secrets.PNPM_PATCH_UPDATE_GITHUB_TOKEN }}@github.com/${{ github.repository }}.git HEAD:${{ github.ref }}
-
-      - name: Install dependencies
-        run: pnpm install
-      - run: pnpm eslint . --max-warnings 0
-      - run: pnpm tsc
-      - name: Build extension
-        run: pnpm build
 ```
 
 Pull request with automatic PR commit including workflow checks: https://github.com/karlhorky/archive-webpage-browser-extension/pull/47
