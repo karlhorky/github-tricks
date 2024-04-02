@@ -250,6 +250,62 @@ Pull request with automatic PR commit including workflow checks: https://github.
   <br />
 </figure>
 
+## GitHub Actions: Run `psql --command` query on Windows
+
+The [`ikalnytskyi/action-setup-postgres`](https://github.com/ikalnytskyi/action-setup-postgres) can be used to easily set up PostgreSQL databases across Windows, macOS and Linux platforms using the preinstalled binaries.
+
+However, running one-off queries using `psql` on Windows [is not straightforward](https://github.com/ikalnytskyi/action-setup-postgres/issues/31).
+
+By default `psql` will interactively ask for a password, which will appear to hang the workflow:
+
+https://github.com/karlhorky/github-tricks/assets/1935696/c122a1fb-75a3-4247-ac7f-9e049b4ce7ad
+
+`psql` will also not skip the interactive password prompt if `PGPASSWORD` environment variables are present, eg. passed in an `env` configuration block:
+
+```yaml
+    env:
+      PGHOST: localhost
+      PGDATABASE: preflight_test_project_next_js_passing
+      PGUSERNAME: preflight_test_project_next_js_passing
+      # 💥 This will not be read by psql, which will lead to the hanging behavior as it waits for a password to be entered
+      PGPASSWORD: preflight_test_project_next_js_passing
+```
+
+The way around this is to pass in the password environment variable explicitly using the `bash` shell:
+
+<!-- An alternative is to  -->
+
+```yaml
+      - name: psql
+        shell: bash
+        run: |
+          PGPASSWORD=preflight_test_project_next_js_passing psql -a --echo-errors -h localhost -U preflight_test_project_next_js_passing -d preflight_test_project_next_js_passing --command 'SELECT 1'
+```
+
+This will show the following output:
+
+```
+Run psql
+  PGPASSWORD=preflight_test_project_next_js_passing psql -a --echo-errors -h localhost -U preflight_test_project_next_js_passing -d preflight_test_project_next_js_passing --command 'SELECT 1'
+  shell: C:\Program Files\Git\bin\bash.EXE --noprofile --norc -e -o pipefail {0}
+  env:
+    PGHOST: localhost
+    PGDATABASE: preflight_test_project_next_js_passing
+    PGUSERNAME: preflight_test_project_next_js_passing
+    PGPASSWORD: 
+    PQ_LIB_DIR: C:\Program Files\PostgreSQL\14\lib
+    PGROOT: 
+    PGDATA: 
+    PGBIN: 
+    PGUSER: 
+    PGSERVICEFILE: D:\a\_temp/pgdata/pg_service.conf
+
+ ?column? 
+----------
+        1
+(1 row)
+```
+
 ## GitHub Flavored Markdown Formatted Table Width
 
 Use `&nbsp;` entities to give a table column a width:
