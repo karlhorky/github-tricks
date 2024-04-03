@@ -285,7 +285,7 @@ jobs:
       - name: Start preinstalled PostgreSQL
         shell: bash
         run: |
-          echo "Initializing database..."
+          echo "Initializing database cluster..."
 
           # Convert backslashes to forward slashes in RUNNER_TEMP for Windows Git Bash
           export PGHOST="${RUNNER_TEMP//\\//}/postgres"
