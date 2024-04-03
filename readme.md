@@ -250,60 +250,62 @@ Pull request with automatic PR commit including workflow checks: https://github.
   <br />
 </figure>
 
-## GitHub Actions: Run `psql --command` query on Windows
+## GitHub Actions: Start preinstalled PostgreSQL database on Windows, macOS and Linux
 
-The [`ikalnytskyi/action-setup-postgres`](https://github.com/ikalnytskyi/action-setup-postgres) can be used to easily set up PostgreSQL databases across Windows, macOS and Linux platforms using the preinstalled binaries.
+The `windows-latest`, `macos-latest` and `ubuntu-latest` runners have PostgreSQL preinstalled.
 
-However, running one-off queries using `psql` on Windows [is not straightforward](https://github.com/ikalnytskyi/action-setup-postgres/issues/31).
-
-By default `psql` will interactively ask for a password, which will appear to hang the workflow:
-
-https://github.com/karlhorky/github-tricks/assets/1935696/c122a1fb-75a3-4247-ac7f-9e049b4ce7ad
-
-`psql` will also not skip the interactive password prompt if `PGPASSWORD` environment variables are present, eg. passed in an `env` configuration block:
+To initialize a cluster, create a user and database and start PostgreSQL cross-platform, use the following GitHub Actions workflow steps (change `database_name`, `username` and `password` to whatever you want):
 
 ```yaml
+name: CI
+on: push
+
+jobs:
+  ci:
+    name: CI
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os: [windows-latest, macos-latest, ubuntu-latest]
+    timeout-minutes: 15
     env:
       PGHOST: localhost
-      PGDATABASE: preflight_test_project_next_js_passing
-      PGUSERNAME: preflight_test_project_next_js_passing
-      # 💥 This will not be read by psql, which will lead to the hanging behavior as it waits for a password to be entered
-      PGPASSWORD: preflight_test_project_next_js_passing
-```
-
-The way around this is to pass in the password environment variable explicitly using the `bash` shell:
-
-<!-- An alternative is to  -->
-
-```yaml
-      - name: psql
+      PGDATABASE: database_name
+      PGUSERNAME: username
+      PGPASSWORD: password
+    steps:
+      - name: Add PostgreSQL binaries to PATH
         shell: bash
         run: |
-          PGPASSWORD=preflight_test_project_next_js_passing psql -a --echo-errors -h localhost -U preflight_test_project_next_js_passing -d preflight_test_project_next_js_passing --command 'SELECT 1'
-```
+          if [ "$RUNNER_OS" == "Windows" ]; then
+            echo "$PGBIN" >> $GITHUB_PATH
+          elif [ "$RUNNER_OS" == "Linux" ]; then
+            echo "$(pg_config --bindir)" >> $GITHUB_PATH
+          fi
+      - name: Start preinstalled PostgreSQL
+        shell: bash
+        run: |
+          echo "Initializing database..."
 
-This will show the following output:
+          # Convert backslashes to forward slashes in RUNNER_TEMP for Windows Git Bash
+          export PGHOST="${RUNNER_TEMP//\\//}/postgres"
+          export PGDATA="$PGHOST/pgdata"
+          mkdir -p "$PGDATA"
 
-```
-Run psql
-  PGPASSWORD=preflight_test_project_next_js_passing psql -a --echo-errors -h localhost -U preflight_test_project_next_js_passing -d preflight_test_project_next_js_passing --command 'SELECT 1'
-  shell: C:\Program Files\Git\bin\bash.EXE --noprofile --norc -e -o pipefail {0}
-  env:
-    PGHOST: localhost
-    PGDATABASE: preflight_test_project_next_js_passing
-    PGUSERNAME: preflight_test_project_next_js_passing
-    PGPASSWORD: 
-    PQ_LIB_DIR: C:\Program Files\PostgreSQL\14\lib
-    PGROOT: 
-    PGDATA: 
-    PGBIN: 
-    PGUSER: 
-    PGSERVICEFILE: D:\a\_temp/pgdata/pg_service.conf
+          # initdb requires file for password in non-interactive mode
+          export PWFILE="$RUNNER_TEMP/pwfile"
+          echo "postgres" > $PWFILE
+          initdb --pgdata="$PGDATA" --username="postgres" --pwfile="$PWFILE"
 
- ?column? 
-----------
-        1
-(1 row)
+          echo "Starting PostgreSQL..."
+          echo "unix_socket_directories = '$PGHOST'" >> "$PGDATA/postgresql.conf"
+          pg_ctl start
+
+          echo "Creating user..."
+          psql --host "$PGHOST" --username="postgres" --dbname="postgres" --command="CREATE USER $PGUSERNAME PASSWORD '$PGPASSWORD'" --command="\du"
+
+          echo "Creating database..."
+          createdb --owner="$PGUSERNAME" --username="postgres" "$PGDATABASE"
 ```
 
 ## GitHub Flavored Markdown Formatted Table Width
