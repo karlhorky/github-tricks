@@ -219,6 +219,12 @@ jobs:
       # https://github.com/pnpm/pnpm/issues/5686#issuecomment-1669538653
       - name: Fix `pnpm patch` not upgrading patch versions automatically
         run: |
+          # Exit if no patches/ directory in root
+          if [ ! -d patches ]; then
+            echo "No patches/ directory found in root"
+            exit 0
+          fi
+
           ./scripts/fix-pnpm-patches.sh
 
           git add package.json pnpm-lock.yaml patches
