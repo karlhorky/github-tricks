@@ -314,6 +314,8 @@ jobs:
           createdb --owner="$PGUSERNAME" --username="postgres" "$PGDATABASE"
 ```
 
+Example PR: https://github.com/upleveled/preflight-test-project-next-js-passing/pull/152/
+
 ## GitHub Flavored Markdown Formatted Table Width
 
 Use `&nbsp;` entities to give a table column a width:
