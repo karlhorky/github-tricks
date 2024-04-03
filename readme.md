@@ -300,7 +300,7 @@ jobs:
 
           # initdb requires file for password in non-interactive mode
           export PWFILE="$RUNNER_TEMP/pwfile"
-          echo "postgres" > $PWFILE
+          echo "postgres" > "$PWFILE"
           initdb --pgdata="$PGDATA" --username="postgres" --pwfile="$PWFILE"
 
           echo "Starting PostgreSQL..."
