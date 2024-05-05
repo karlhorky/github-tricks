@@ -4,7 +4,7 @@ A collection of useful GitHub tricks
 
 ## GitHub Actions: Configure `actions/cache` to Skip Cache Restoration on Changes in Directory
 
-To configure [`actions/cache`](https://github.com/actions/cache) to skip cache restoration on modification of any files or directories inside a Git-tracked directory, use a `key` based on the last Git commit hash which modified anything contained in the directory:
+To configure [`actions/cache`](https://github.com/actions/cache) to skip cache restoration on modification of any files or directories inside a Git-tracked directory, configure [`actions/checkout`](https://github.com/actions/checkout) to fetch all history and use a `key` based on the last Git commit hash which modified anything contained in the directory:
 
 ```yaml
 name: Skip cache restoration on changes in directory
@@ -16,6 +16,9 @@ jobs:
     steps:
     - name: Checkout repository
       uses: actions/checkout@v4
+      with:
+        # Fetch all commits in all branches and tags
+        fetch-depth: 0
 
     - name: Get last Git commit hash modifying packages/abc
       run: |
