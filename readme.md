@@ -2,6 +2,64 @@
 
 A collection of useful GitHub tricks
 
+## GitHub Actions: Configure `actions/cache` to Skip Cache Restoration on Changes in Directory
+
+To configure [`actions/cache`](https://github.com/actions/cache) to skip cache restoration on modification of any files or directories inside a Git-tracked directory, use a `key` based on the last Git commit hash which modified anything contained in the directory:
+
+```yaml
+name: Skip cache restoration on changes in directory
+on: [push]
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v4
+
+    - name: Get last Git commit hash modifying packages/abc
+      run: |
+        echo "ABC_HASH=$(git log -1 --pretty=format:%H -- packages/abc)" >> $GITHUB_ENV
+
+    - name: Cache packages/abc
+      uses: actions/cache@v4
+      with:
+        path: packages/abc
+        key: abc-build-cache-${{ env.ABC_HASH }}
+
+    - name: Build packages/abc
+      run: |
+        pnpm --filter=abc build
+```
+
+## GitHub Actions: Configure `actions/cache` to Skip Cache Restoration on Re-runs
+
+To configure [`actions/cache`](https://github.com/actions/cache) to skip cache restoration on any re-runs of the workflow (to avoid having to manually delete flaky caches), use [an `if` conditional](https://docs.github.com/en/actions/using-jobs/using-conditions-to-control-job-execution) on the workflow step to check that [`github.run_attempt`](https://docs.github.com/en/actions/learn-github-actions/contexts#github-context:~:text=the%20workflow%20run.-,github.run_attempt,-string) is set to `1`, indicating that it is the first attempt to run the workflow:
+
+```yaml
+name: Skip cache restoration on re-runs
+on: [push]
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v4
+
+    - name: Cache packages/abc
+      # Only restore cache on first run attempt
+      if: ${{ github.run_attempt == 1 }}
+      uses: actions/cache@v4
+      with:
+        path: packages/abc
+        key: abc-build-cache
+
+    - name: Build packages/abc
+      run: |
+        pnpm --filter=abc build
+```
+
 ## GitHub Actions: Create Release from `CHANGELOG.md` on New Tag
 
 Create a new GitHub Release with contents from `CHANGELOG.md` every time a new tag is pushed.
