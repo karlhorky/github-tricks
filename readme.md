@@ -14,25 +14,25 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 10
     steps:
-    - name: Checkout repository
-      uses: actions/checkout@v4
-      with:
-        # Fetch all commits in all branches and tags
-        fetch-depth: 0
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          # Fetch all commits in all branches and tags
+          fetch-depth: 0
 
-    - name: Get last Git commit hash modifying packages/abc
-      run: |
-        echo "ABC_HASH=$(git log -1 --pretty=format:%H -- packages/abc)" >> $GITHUB_ENV
+      - name: Get last Git commit hash modifying packages/abc
+        run: |
+          echo "ABC_HASH=$(git log -1 --pretty=format:%H -- packages/abc)" >> $GITHUB_ENV
 
-    - name: Cache packages/abc
-      uses: actions/cache@v4
-      with:
-        path: packages/abc
-        key: abc-build-cache-${{ env.ABC_HASH }}
+      - name: Cache packages/abc
+        uses: actions/cache@v4
+        with:
+          path: packages/abc
+          key: abc-build-cache-${{ env.ABC_HASH }}
 
-    - name: Build packages/abc
-      run: |
-        pnpm --filter=abc build
+      - name: Build packages/abc
+        run: |
+          pnpm --filter=abc build
 ```
 
 ## GitHub Actions: Configure `actions/cache` to Skip Cache Restoration on Re-runs
@@ -47,20 +47,20 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 10
     steps:
-    - name: Checkout repository
-      uses: actions/checkout@v4
+      - name: Checkout repository
+        uses: actions/checkout@v4
 
-    - name: Cache packages/abc
-      # Only restore cache on first run attempt
-      if: ${{ github.run_attempt == 1 }}
-      uses: actions/cache@v4
-      with:
-        path: packages/abc
-        key: abc-build-cache
+      - name: Cache packages/abc
+        # Only restore cache on first run attempt
+        if: ${{ github.run_attempt == 1 }}
+        uses: actions/cache@v4
+        with:
+          path: packages/abc
+          key: abc-build-cache
 
-    - name: Build packages/abc
-      run: |
-        pnpm --filter=abc build
+      - name: Build packages/abc
+        run: |
+          pnpm --filter=abc build
 ```
 
 ## GitHub Actions: Create Release from `CHANGELOG.md` on New Tag
@@ -317,11 +317,14 @@ Pull request with automatic PR commit including workflow checks: https://github.
   <br />
 </figure>
 
-## GitHub Actions: Start preinstalled PostgreSQL database on Windows, macOS and Linux
+## GitHub Actions: Create PostgreSQL databases on Windows, macOS and Linux
 
-The `windows-latest`, `macos-latest` and `ubuntu-latest` runners have PostgreSQL preinstalled.
+PostgreSQL databases can be created and used cross-platform on GitHub Actions, either by using the preinstalled PostgreSQL installation or installing PostgreSQL:
 
-To initialize a cluster, create a user and database and start PostgreSQL cross-platform, use the following GitHub Actions workflow steps (change `database_name`, `username` and `password` to whatever you want):
+- [`windows-latest` and `ubuntu-latest` runners](https://github.com/actions/runner-images#available-images) have PostgreSQL preinstalled
+- [`macos-latest` runners](https://github.com/actions/runner-images#available-images) [don't have PostgreSQL preinstalled (as of May 2024)](https://github.com/actions/runner-images/issues/9029#issuecomment-1856487621)
+
+To conditionally install PostgreSQL, initialize a cluster, create a user and database and start PostgreSQL cross-platform, use the following GitHub Actions workflow steps (change `database_name`, `username` and `password` to whatever you want):
 
 ```yaml
 name: CI
@@ -341,6 +344,9 @@ jobs:
       PGUSERNAME: username
       PGPASSWORD: password
     steps:
+      - name: Install PostgreSQL on macOS
+        if: runner.os == 'macOS'
+        run: brew install postgresql
       - name: Add PostgreSQL binaries to PATH
         shell: bash
         run: |
