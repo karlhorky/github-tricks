@@ -317,11 +317,14 @@ Pull request with automatic PR commit including workflow checks: https://github.
   <br />
 </figure>
 
-## GitHub Actions: Start preinstalled PostgreSQL database on Windows, macOS and Linux
+## GitHub Actions: Create PostgreSQL databases on Windows, macOS and Linux
 
-The `windows-latest` and `ubuntu-latest` runners have PostgreSQL preinstalled, `macos-latest` runners don't have PostgreSQL preinstalled, but you can install it using Homebrew.
+PostgreSQL databases can be created and used cross-platform on GitHub Actions, either by using the preinstalled PostgreSQL installation or installing PostgreSQL:
 
-To initialize a cluster, create a user and database and start PostgreSQL cross-platform, use the following GitHub Actions workflow steps (change `database_name`, `username` and `password` to whatever you want):
+- [`windows-latest` and `ubuntu-latest` runners](https://github.com/actions/runner-images#available-images) have PostgreSQL preinstalled
+- [`macos-latest` runners](https://github.com/actions/runner-images#available-images) [don't have PostgreSQL preinstalled (as of May 2024)](https://github.com/actions/runner-images/issues/9029#issuecomment-1856487621)
+
+To conditionally install PostgreSQL, initialize a cluster, create a user and database and start PostgreSQL cross-platform, use the following GitHub Actions workflow steps (change `database_name`, `username` and `password` to whatever you want):
 
 ```yaml
 name: CI
