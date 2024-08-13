@@ -170,6 +170,50 @@ Or, to copy all `@types/*` and `typescript` packages from `devDependencies` to `
 yq --inplace --output-format=json '.dependencies = .dependencies * (.devDependencies | to_entries | map(select(.key | test("^(typescript|@types/*)"))) | from_entries)' package.json
 ```
 
+## GitHub Actions: Free disk space
+
+On GitHub Actions, [runners are only guaranteed 14GB of storage space (disk space)](https://github.com/actions/runner-images/issues/9344#issuecomment-1942811369) ([docs](https://docs.github.com/en/actions/using-github-hosted-runners/using-github-hosted-runners/about-github-hosted-runners#standard-github-hosted-runners-for-public-repositories)), which can lead to the following errors if your workflow uses more than that:
+
+```
+System.IO.IOException: No space left on device
+```
+
+or
+
+```
+You are running out of disk space. The runner will stop working when the machine runs out of disk space. Free space left: 72 MB
+```
+
+OR
+
+```
+ENOSPC: no space left on device, write
+```
+
+To free up disk space for your workflow, use [the Free Disk Space (Ubuntu) action](https://github.com/marketplace/actions/free-disk-space-ubuntu) ([GitHub repo](https://github.com/jlumbroso/free-disk-space)):
+
+```yaml
+      - name: Free Disk Space (Ubuntu)
+        uses: jlumbroso/free-disk-space@v1.3.1
+        with:
+          # Avoid slow clearing of large packages
+          large-packages: false
+```
+
+You may need to disable some of the clearing options, if your workflow relies upon features or programs which are being removed:
+
+```yaml
+      - name: Free Disk Space (Ubuntu)
+        uses: jlumbroso/free-disk-space@v1.3.1
+        with:
+          # Re-enable swap storage for processes which use more memory
+          # than available and start using swap
+          swap-storage: false
+
+          # Avoid slow clearing of large packages
+          large-packages: false
+```
+
 ## GitHub Actions: Push to Pull Request and Re-Run Workflows
 
 It can be useful to commit and push to a pull request in a GitHub Actions workflow, eg. an automated script that fixes something like [upgrading pnpm patch versions on automatic Renovate dependency upgrades](https://github.com/pnpm/pnpm/issues/5686#issuecomment-1669538653).
