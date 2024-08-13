@@ -78,6 +78,11 @@ To resolve this, switch off `actions/setup-node` and instead use the preinstalle
           rm /usr/local/bin/node
           ln -s $(which node) /usr/local/bin/node
         shell: bash -l {0}
+```
+
+If you also need caching for pnpm (replacement for the `cache` setting of `actions/setup-node`), follow with this config of [`actions/cache`](https://github.com/actions/cache):
+
+```yaml
       - name: Get pnpm store directory
         shell: bash
         run: |
