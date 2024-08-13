@@ -149,9 +149,9 @@ jobs:
           ssh-key: ${{ secrets.SSH_PRIVATE_KEY }}
 
       - name: Use Node.js
-        uses: actions/setup-node@v3
+        uses: actions/setup-node@v4
         with:
-          node-version: '16'
+          node-version: 'lts/*'
 
       - name: Copy "resolutions" object to "overrides" in package.json
         run: yq --inplace --output-format=json '.overrides = .resolutions' package.json
