@@ -63,6 +63,34 @@ jobs:
           pnpm --filter=abc build
 ```
 
+## GitHub Actions: Correct Broken `actions/setup-node` Version Resolution
+
+[Version resolution of Node.js aliases like `lts/*` in `actions/setup-node` is broken as of Aug 2024](https://github.com/actions/setup-node/issues/940#issuecomment-2029638604) (and will probably continue to be broken).
+
+To resolve this, switch off `actions/setup-node` and instead use the preinstalled `nvm` to install the correct Node.js version based on the alias:
+
+```yaml
+      # Use nvm because actions/setup-node does not install latest versions
+      # https://github.com/actions/setup-node/issues/940
+      - name: Install latest LTS with nvm
+        run: |
+          nvm install 'lts/*'
+          rm /usr/local/bin/node
+          ln -s $(which node) /usr/local/bin/node
+        shell: bash -l {0}
+      - name: Get pnpm store directory
+        shell: bash
+        run: |
+          echo "STORE_PATH=$(pnpm store path --silent)" >> $GITHUB_ENV
+      - uses: actions/cache@v4
+        name: Setup pnpm cache
+        with:
+          path: ${{ env.STORE_PATH }}
+          key: ${{ runner.os }}-pnpm-store-${{ hashFiles('**/pnpm-lock.yaml') }}
+          restore-keys: |
+            ${{ runner.os }}-pnpm-store-
+```
+
 ## GitHub Actions: Create Release from `CHANGELOG.md` on New Tag
 
 Create a new GitHub Release with contents from `CHANGELOG.md` every time a new tag is pushed.
@@ -170,7 +198,7 @@ Or, to copy all `@types/*` and `typescript` packages from `devDependencies` to `
 yq --inplace --output-format=json '.dependencies = .dependencies * (.devDependencies | to_entries | map(select(.key | test("^(typescript|@types/*)"))) | from_entries)' package.json
 ```
 
-## GitHub Actions: Free disk space
+## GitHub Actions: Free Disk Space
 
 On GitHub Actions, [runners are only guaranteed 14GB of storage space (disk space)](https://github.com/actions/runner-images/issues/9344#issuecomment-1942811369) ([docs](https://docs.github.com/en/actions/using-github-hosted-runners/using-github-hosted-runners/about-github-hosted-runners#standard-github-hosted-runners-for-public-repositories)), which can lead to the following errors if your workflow uses more than that:
 
