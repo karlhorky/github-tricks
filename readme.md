@@ -75,8 +75,7 @@ To resolve this, switch off `actions/setup-node` and instead use the preinstalle
       - name: Install latest LTS with nvm
         run: |
           nvm install 'lts/*'
-          rm /usr/local/bin/node
-          ln -s $(which node) /usr/local/bin/node
+          echo "$(dirname $(which node))" >> $GITHUB_PATH
         shell: bash -l {0}
 ```
 
