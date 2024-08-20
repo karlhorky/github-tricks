@@ -424,7 +424,8 @@ jobs:
         if: runner.os == 'macOS'
         run: |
           brew install postgresql@16
-          brew link postgresql@16
+          # --overwrite: Overwrite pre-installed GitHub Actions PostgreSQL binaries
+          brew link --overwrite postgresql@16
       - name: Add PostgreSQL binaries to PATH
         shell: bash
         run: |
