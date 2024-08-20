@@ -422,7 +422,9 @@ jobs:
     steps:
       - name: Install PostgreSQL on macOS
         if: runner.os == 'macOS'
-        run: brew install postgresql
+        run: |
+          brew install postgresql@16
+          brew link postgresql@16
       - name: Add PostgreSQL binaries to PATH
         shell: bash
         run: |
