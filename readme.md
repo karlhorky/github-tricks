@@ -246,6 +246,76 @@ You may need to disable some of the clearing options, if your workflow relies up
           large-packages: false
 ```
 
+## GitHub Actions: Only Run When Certain Files Changed
+
+Only run a GitHub Actions workflow when files matching a pattern have been changed, for example on an update to a pull request:
+
+```yaml
+name: Fix Excalidraw SVG Fonts
+on:
+  pull_request:
+    paths:
+      # All .excalidraw.svg files in any folder at any level inside `packages/content-items`
+      - 'packages/content-items/**/*.excalidraw.svg'
+      # All .excalidraw.svg files directly inside `packages/database/.readme/`
+      - 'packages/database/.readme/*.excalidraw.svg'
+```
+
+For example, the following workflow uses `sed` to add default fonts to Excalidraw diagrams ([no longer needed](https://github.com/excalidraw/excalidraw/issues/4855#issuecomment-2259189107)):
+
+```yaml
+# Workaround to fix fonts in Excalidraw SVGs
+# https://github.com/excalidraw/excalidraw/issues/4855#issuecomment-1513014554
+#
+# Temporary workaround until the following PR is merged:
+# https://github.com/excalidraw/excalidraw/pull/6479
+#
+# TODO: If the PR above is merged, this file can be removed
+name: Fix Excalidraw SVG Fonts
+on:
+  pull_request:
+    # Run only when Excalidraw SVG files are added or changed
+    paths:
+      - 'packages/content-items/contentItems/documentation/*.excalidraw.svg'
+      - 'packages/database/.readme/*.excalidraw.svg'
+
+jobs:
+  build:
+    # Only run on Pull Requests within the same repository, and not from forks
+    if: github.event.pull_request.head.repo.full_name == github.repository
+    name: Fix Excalidraw SVG Fonts
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - name: Checkout Repo
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.head_ref }}
+
+      - name: Fix fonts in Excalidraw SVGs
+        run: |
+          find packages/content-items/contentItems/documentation packages/database/.readme -type f -iname '*.excalidraw.svg' | while read file; do
+            echo "Fixing fonts in $file"
+            sed -i.bak 's/Virgil, Segoe UI Emoji/Virgil, '"'"'Comic Sans MS'"'"', '"'"'Segoe Print'"'"', '"'"'Bradley Hand'"'"', '"'"'Lucida Handwriting'"'"', '"'"'Marker Felt'"'"', cursive/g' "$file"
+            sed -i.bak 's/Helvetica, Segoe UI Emoji/Helvetica, -apple-system,BlinkMacSystemFont, '"'"'Segoe UI'"'"', '"'"'Noto Sans'"'"', Helvetica, Arial, sans-serif, '"'"'Apple Color Emoji'"'"', '"'"'Segoe UI Emoji'"'"'/g' "$file"
+            sed -i.bak 's/Cascadia, Segoe UI Emoji/Cascadia, ui-monospace, SFMono-Regular, '"'"'SF Mono'"'"', Menlo, Consolas, '"'"'Liberation Mono'"'"', monospace/g' "$file"
+            rm "${file}.bak"
+          done
+      - name: Commit files
+        run: |
+          git config user.email github-actions[bot]@users.noreply.github.com
+          git config user.name github-actions[bot]
+          git add packages/content-items/contentItems/documentation/*.excalidraw.svg
+          git add packages/database/.readme/*.excalidraw.svg
+          if [ -z "$(git status --porcelain)" ]; then
+            exit 0
+          fi
+          git commit -m "Fix fonts in Excalidraw SVGs"
+          git push origin HEAD:${{ github.head_ref }}
+        env:
+          GITHUB_TOKEN: ${{ secrets.EXCALIDRAW_FONT_FIX_GITHUB_TOKEN }}
+```
+
 ## GitHub Actions: Push to Pull Request and Re-Run Workflows
 
 It can be useful to commit and push to a pull request in a GitHub Actions workflow, eg. an automated script that fixes something like [upgrading pnpm patch versions on automatic Renovate dependency upgrades](https://github.com/pnpm/pnpm/issues/5686#issuecomment-1669538653).
