@@ -597,52 +597,51 @@ First, install and set up the [Refined GitHub](https://github.com/refined-github
 
 ```css
 /* https://github.com/refined-github/refined-github/issues/8463#issuecomment-3094626175 */
-html:not([rgh-OFF-sticky-comment-header]) {
-	/* Issue body header */
-	[class^="IssueBodyHeader-module__IssueBodyHeaderContainer"],
-	/* Issue comment header */
-	[data-testid='comment-header'],
-	/* PR body/comment header */
-	.timeline-comment-header {
-		position: sticky;
-		top: calc(var(--base-sticky-header-height, 0px) + 56px);
-		z-index: 3;
-		background: var(--bgColor-muted, var(--color-canvas-subtle)) !important;
-	}
 
-	/* Show menus on top of headers */
-	.js-timeline-item:has(details:open) .timeline-comment-header {
-		z-index: 4;
-	}
+/* Issue body header */
+[class^="IssueBodyHeader-module__IssueBodyHeaderContainer"],
+/* Issue comment header */
+[data-testid='comment-header'],
+/* PR body/comment header */
+.timeline-comment-header {
+	position: sticky;
+	top: calc(var(--base-sticky-header-height, 0px) + 56px);
+	z-index: 3;
+	background: var(--bgColor-muted, var(--color-canvas-subtle)) !important;
+}
 
-	[class^="IssueBodyHeader-module__IssueBodyHeaderContainer"],
-	[data-testid="comment-header"] {
-		border-radius: 0;
-	}
+/* Show menus on top of headers */
+.js-timeline-item:has(details:open) .timeline-comment-header {
+	z-index: 4;
+}
 
-	/* Issue body container */
-	[data-testid="issue-body"] [class^="Box"]:has(> #issue-body-viewer),
-	/* Issue comment container */
-	[class^="IssueCommentViewer-module__IssueCommentContent"] {
-		border-radius: var(--borderRadius-medium);
-		overflow: clip;
-	}
+[class^="IssueBodyHeader-module__IssueBodyHeaderContainer"],
+[data-testid="comment-header"] {
+	border-radius: 0;
+}
 
-	@supports (anchor-name: --test) {
-		[app-name="issues-react"] {
-			[class*="ActivityHeader-module__activityHeader"]
-				button[aria-haspopup="true"][aria-expanded="true"] {
-				anchor-name: --header;
-			}
+/* Issue body container */
+[data-testid="issue-body"] [class^="Box"]:has(> #issue-body-viewer),
+/* Issue comment container */
+[class^="IssueCommentViewer-module__IssueCommentContent"] {
+	border-radius: var(--borderRadius-medium);
+	overflow: clip;
+}
 
-			[class^="prc-Overlay-Overlay"][data-variant="anchored"]:has(
-					.octicon-quote,
-					[class*="scrollableEditHistoryList"]
-				) {
-				position: fixed !important;
-				position-anchor: --header;
-				top: anchor(bottom) !important;
-			}
+@supports (anchor-name: --test) {
+	[app-name="issues-react"] {
+		[class*="ActivityHeader-module__activityHeader"]
+			button[aria-haspopup="true"][aria-expanded="true"] {
+			anchor-name: --header;
+		}
+
+		[class^="prc-Overlay-Overlay"][data-variant="anchored"]:has(
+				.octicon-quote,
+				[class*="scrollableEditHistoryList"]
+			) {
+			position: fixed !important;
+			position-anchor: --header;
+			top: anchor(bottom) !important;
 		}
 	}
 }
