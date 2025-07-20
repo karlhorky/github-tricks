@@ -593,7 +593,7 @@ Keeping the context and actions from the comment header in view can be especiall
 
 https://github.com/user-attachments/assets/0a38d7e2-d16c-4d52-b250-c51a050af501
 
-First, install and set up the [Refined GitHub](https://github.com/refined-github/refined-github) browser extension. In the Refined GitHub options under Custom CSS, add the following CSS from @SunsetTechuila's closed PR https://github.com/refined-github/refined-github/pull/8544
+First, install and set up the [Refined GitHub](https://github.com/refined-github/refined-github) browser extension. In the Refined GitHub options under Custom CSS, add the following CSS from [@SunsetTechuila](https://github.com/SunsetTechuila)'s closed PR https://github.com/refined-github/refined-github/pull/8544
 
 ```css
 /* https://github.com/refined-github/refined-github/issues/8463#issuecomment-3094626175 */
