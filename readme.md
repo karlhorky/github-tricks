@@ -610,6 +610,10 @@ First, install and set up the [Refined GitHub](https://github.com/refined-github
 	background: var(--bgColor-muted, var(--color-canvas-subtle)) !important;
 }
 
+[id^="gistcomment"] .timeline-comment-header {
+	top: 0;
+}
+
 /* Show menus on top of headers */
 .js-timeline-item:has(details:open) .timeline-comment-header {
 	z-index: 4;
