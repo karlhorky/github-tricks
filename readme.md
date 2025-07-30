@@ -615,7 +615,7 @@ First, install and set up the [Refined GitHub](https://github.com/refined-github
 }
 
 /* Show menus on top of headers */
-.js-timeline-item:has(details:open) .timeline-comment-header {
+.js-comment-container:has(details:open) .timeline-comment-header {
 	z-index: 4;
 }
 
