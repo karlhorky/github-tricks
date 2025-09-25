@@ -532,6 +532,35 @@ Pull request with automatic PR commit including workflow checks: https://github.
   <br />
 </figure>
 
+## GitHub Actions: Skip step if PR branch deleted
+
+If commands in a GitHub Actions step rely on existence of the PR branch and the PR branch has been deleted, then workflow runs will fail with `couldn't find remote ref` errors:
+
+```bash
+git fetch origin "${{ github.ref }}" # Git command in the workflow step relies upon existence of PR branch 
+fatal: couldn't find remote ref allow-sharp-build-explicitly
+Error: Process completed with exit code 128.
+```
+
+To avoid these failing workflow runs, skip the rest of the step by exiting early with a `0` exit code if `git ls-remote` for `github.ref` errors:
+
+```yaml
+name: CI
+on: [push]
+jobs:
+  ci:
+    name: CI
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v5
+      - run: |
+          git ls-remote --exit-code origin "${{ github.ref }}" >/dev/null || { echo 'PR branch missing, skipping...'; exit 0; }
+
+          # Would fail without the skip command above
+          git fetch origin "${{ github.ref }}"
+```
+
 ## GitHub Flavored Markdown Formatted Table Width
 
 Use `&nbsp;` entities to give a table column a width:
