@@ -534,7 +534,7 @@ Pull request with automatic PR commit including workflow checks: https://github.
 
 ## GitHub Actions: Skip step if PR branch deleted
 
-If commands in a GitHub Actions step rely on existence of the PR branch and the PR branch has been deleted, then workflow runs will fail with `couldn't find remote ref` errors:
+If commands in a GitHub Actions step rely on existence of the PR branch and the PR branch has been deleted (for example, automatically after the PR is merged), then workflow runs will fail with `couldn't find remote ref` errors:
 
 ```bash
 git fetch origin "${{ github.ref }}" # Git command in the workflow step relies upon existence of PR branch 
@@ -555,7 +555,7 @@ jobs:
     steps:
       - uses: actions/checkout@v5
       - run: |
-          git ls-remote --exit-code origin "${{ github.ref }}" >/dev/null || { echo 'PR branch missing, skipping...'; exit 0; }
+          git ls-remote --exit-code origin "${{ github.ref }}" >/dev/null || { echo 'Upstream branch missing on origin, skipping...'; exit 0; }
 
           # Would fail without the skip command above
           git fetch origin "${{ github.ref }}"
