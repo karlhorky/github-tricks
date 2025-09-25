@@ -95,6 +95,75 @@ If you also need caching for pnpm (replacement for the `cache` setting of `actio
             ${{ runner.os }}-pnpm-store-
 ```
 
+## GitHub Actions: Create PostgreSQL databases on Windows, macOS and Linux
+
+PostgreSQL databases can be created and used cross-platform on GitHub Actions, either by using the preinstalled PostgreSQL installation or installing PostgreSQL:
+
+- [`windows-latest` and `ubuntu-latest` runners](https://github.com/actions/runner-images#available-images) have PostgreSQL preinstalled
+- [`macos-latest` runners](https://github.com/actions/runner-images#available-images) [don't have PostgreSQL preinstalled (as of May 2024)](https://github.com/actions/runner-images/issues/9029#issuecomment-1856487621)
+
+To conditionally install PostgreSQL, initialize a cluster, create a user and database and start PostgreSQL cross-platform, use the following GitHub Actions workflow steps (change `database_name`, `username` and `password` to whatever you want):
+
+```yaml
+name: CI
+on: push
+
+jobs:
+  ci:
+    name: CI
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os: [windows-latest, macos-latest, ubuntu-latest]
+    timeout-minutes: 15
+    env:
+      PGHOST: localhost
+      PGDATABASE: database_name
+      PGUSERNAME: username
+      PGPASSWORD: password
+    steps:
+      - name: Install PostgreSQL on macOS
+        if: runner.os == 'macOS'
+        run: |
+          brew install postgresql@16
+          # --overwrite: Overwrite pre-installed GitHub Actions PostgreSQL binaries
+          brew link --overwrite postgresql@16
+      - name: Add PostgreSQL binaries to PATH
+        shell: bash
+        run: |
+          if [ "$RUNNER_OS" == "Windows" ]; then
+            echo "$PGBIN" >> $GITHUB_PATH
+          elif [ "$RUNNER_OS" == "Linux" ]; then
+            echo "$(pg_config --bindir)" >> $GITHUB_PATH
+          fi
+      - name: Start preinstalled PostgreSQL
+        shell: bash
+        run: |
+          echo "Initializing database cluster..."
+
+          # Convert backslashes to forward slashes in RUNNER_TEMP for Windows Git Bash
+          export PGHOST="${RUNNER_TEMP//\\//}/postgres"
+          export PGDATA="$PGHOST/pgdata"
+          mkdir -p "$PGDATA"
+
+          # initdb requires file for password in non-interactive mode
+          export PWFILE="$RUNNER_TEMP/pwfile"
+          echo "postgres" > "$PWFILE"
+          initdb --pgdata="$PGDATA" --username="postgres" --pwfile="$PWFILE"
+
+          echo "Starting PostgreSQL..."
+          echo "unix_socket_directories = '$PGHOST'" >> "$PGDATA/postgresql.conf"
+          pg_ctl start
+
+          echo "Creating user..."
+          psql --host "$PGHOST" --username="postgres" --dbname="postgres" --command="CREATE USER $PGUSERNAME PASSWORD '$PGPASSWORD'" --command="\du"
+
+          echo "Creating database..."
+          createdb --owner="$PGUSERNAME" --username="postgres" "$PGDATABASE"
+```
+
+Example PR: https://github.com/upleveled/preflight-test-project-next-js-passing/pull/152/
+
 ## GitHub Actions: Create Release from `CHANGELOG.md` on New Tag
 
 Create a new GitHub Release with contents from `CHANGELOG.md` every time a new tag is pushed.
@@ -462,75 +531,6 @@ Pull request with automatic PR commit including workflow checks: https://github.
   <br />
   <br />
 </figure>
-
-## GitHub Actions: Create PostgreSQL databases on Windows, macOS and Linux
-
-PostgreSQL databases can be created and used cross-platform on GitHub Actions, either by using the preinstalled PostgreSQL installation or installing PostgreSQL:
-
-- [`windows-latest` and `ubuntu-latest` runners](https://github.com/actions/runner-images#available-images) have PostgreSQL preinstalled
-- [`macos-latest` runners](https://github.com/actions/runner-images#available-images) [don't have PostgreSQL preinstalled (as of May 2024)](https://github.com/actions/runner-images/issues/9029#issuecomment-1856487621)
-
-To conditionally install PostgreSQL, initialize a cluster, create a user and database and start PostgreSQL cross-platform, use the following GitHub Actions workflow steps (change `database_name`, `username` and `password` to whatever you want):
-
-```yaml
-name: CI
-on: push
-
-jobs:
-  ci:
-    name: CI
-    runs-on: ${{ matrix.os }}
-    strategy:
-      matrix:
-        os: [windows-latest, macos-latest, ubuntu-latest]
-    timeout-minutes: 15
-    env:
-      PGHOST: localhost
-      PGDATABASE: database_name
-      PGUSERNAME: username
-      PGPASSWORD: password
-    steps:
-      - name: Install PostgreSQL on macOS
-        if: runner.os == 'macOS'
-        run: |
-          brew install postgresql@16
-          # --overwrite: Overwrite pre-installed GitHub Actions PostgreSQL binaries
-          brew link --overwrite postgresql@16
-      - name: Add PostgreSQL binaries to PATH
-        shell: bash
-        run: |
-          if [ "$RUNNER_OS" == "Windows" ]; then
-            echo "$PGBIN" >> $GITHUB_PATH
-          elif [ "$RUNNER_OS" == "Linux" ]; then
-            echo "$(pg_config --bindir)" >> $GITHUB_PATH
-          fi
-      - name: Start preinstalled PostgreSQL
-        shell: bash
-        run: |
-          echo "Initializing database cluster..."
-
-          # Convert backslashes to forward slashes in RUNNER_TEMP for Windows Git Bash
-          export PGHOST="${RUNNER_TEMP//\\//}/postgres"
-          export PGDATA="$PGHOST/pgdata"
-          mkdir -p "$PGDATA"
-
-          # initdb requires file for password in non-interactive mode
-          export PWFILE="$RUNNER_TEMP/pwfile"
-          echo "postgres" > "$PWFILE"
-          initdb --pgdata="$PGDATA" --username="postgres" --pwfile="$PWFILE"
-
-          echo "Starting PostgreSQL..."
-          echo "unix_socket_directories = '$PGHOST'" >> "$PGDATA/postgresql.conf"
-          pg_ctl start
-
-          echo "Creating user..."
-          psql --host "$PGHOST" --username="postgres" --dbname="postgres" --command="CREATE USER $PGUSERNAME PASSWORD '$PGPASSWORD'" --command="\du"
-
-          echo "Creating database..."
-          createdb --owner="$PGUSERNAME" --username="postgres" "$PGDATABASE"
-```
-
-Example PR: https://github.com/upleveled/preflight-test-project-next-js-passing/pull/152/
 
 ## GitHub Flavored Markdown Formatted Table Width
 
