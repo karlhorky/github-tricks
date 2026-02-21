@@ -566,7 +566,10 @@ GitHub does not support `dependabot_alert` as a native GitHub Actions workflow t
 
 To trigger GitHub Actions workflows from Dependabot alerts, use [`dependabot-alert-bridge`](https://github.com/karlhorky/dependabot-alert-bridge) to forward `dependabot_alert` webhooks to `repository_dispatch`, then trigger your workflow on `repository_dispatch` with `types: [dependabot-alert-bridge.dependabot-alert-opened]`.
 
-Example workflow: [`.github/workflows/dependabot-alert-bridge-security-updates.yml`](https://github.com/karlhorky/dependabot-alert-bridge/blob/main/.github/workflows/dependabot-alert-bridge-security-updates.yml)
+For example, you could run `pnpm up` to upgrade pnpm transitive dependencies upon Dependabot alerts, because [Dependabot doesn't support pnpm
+  transitive dependency updates](https://github.com/dependabot/dependabot-core/issues/13177).
+
+Example workflow with `pnpm up`: [`.github/workflows/dependabot-alert-bridge-security-updates.yml`](https://github.com/karlhorky/dependabot-alert-bridge/blob/main/.github/workflows/dependabot-alert-bridge-security-updates.yml)
 
 ## GitHub Flavored Markdown Formatted Table Width
 
