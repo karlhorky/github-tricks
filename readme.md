@@ -560,6 +560,14 @@ jobs:
           git fetch origin "${{ github.ref }}"
 ```
 
+## GitHub Actions: Trigger Workflows from Dependabot Alerts via `repository_dispatch`
+
+GitHub does not support `dependabot_alert` as a native GitHub Actions workflow trigger, but it is available as a GitHub App webhook event.
+
+To trigger GitHub Actions workflows from Dependabot alerts, use [`dependabot-alert-bridge`](https://github.com/karlhorky/dependabot-alert-bridge) to forward `dependabot_alert` webhooks to `repository_dispatch`, then trigger your workflow on `repository_dispatch` with `types: [dependabot-alert-bridge.dependabot-alert-opened]`.
+
+Example workflow: [`.github/workflows/dependabot-alert-bridge-security-updates.yml`](https://github.com/karlhorky/dependabot-alert-bridge/blob/main/.github/workflows/dependabot-alert-bridge-security-updates.yml)
+
 ## GitHub Flavored Markdown Formatted Table Width
 
 Use `&nbsp;` entities to give a table column a width:
